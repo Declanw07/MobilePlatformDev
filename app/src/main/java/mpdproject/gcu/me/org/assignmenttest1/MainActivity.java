@@ -14,10 +14,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
-import org.xmlpull.v1.XmlPullParserFactory;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -61,9 +57,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         new Thread(new Task(_planned_roadworks)).start();
 
     } //
-
-    public
-
 
 
     // Need separate thread to access the internet resource over network

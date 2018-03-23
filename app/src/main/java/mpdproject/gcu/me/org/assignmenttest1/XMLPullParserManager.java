@@ -9,35 +9,40 @@ import java.util.List;
 
 public class XMLPullParserManager {
 
-    List<Incident> incidents;
-    List<Roadwork> roadworks;
+    List<Item> incidents;
+    List<Item> roadworks;
+    List<Item> planned_roadworks;
 
-    private Incident incident;
-    private Roadwork roadwork;
+    private Item incident, roadwork, planned_roadwork;
 
     private String text;
 
-    public XMLPullParserManager(){
-        incidents = new ArrayList<Incident>();
-        roadworks = new ArrayList<Roadwork>();
+    public XMLPullParserManager() {
+        incidents = new ArrayList<Item>();
+        roadworks = new ArrayList<Item>();
+        planned_roadworks = new ArrayList<Item>();
     }
 
-    public List<Incident> getIncidents(){
+    public List<Item> getIncidents() {
         return incidents;
     }
 
-    public List<Roadwork> getRoadworks(){
+    public List<Item> getRoadworks() {
         return roadworks;
     }
 
+    public List<Item> getPlanned_roadworks() {
+        return planned_roadworks;
+    }
 
 
-    public List<Incident> parseIncidents(InputStream stream){
+    // dataType is used to determine if the data being parsed is incidents(0), roadworks(1) or planned roadworks(2).
+    public List<Item> parseItems(InputStream stream, Integer dataTypeID) {
 
         XmlPullParserFactory factory = null;
         XmlPullParser parser = null;
 
-        try{
+        try {
             factory = XmlPullParserFactory.newInstance();
             factory.setNamespaceAware(true);
 
@@ -45,15 +50,21 @@ public class XMLPullParserManager {
             parser.setInput(stream, null);
 
             int eventType = parser.getEventType();
-            while(eventType != XmlPullParser.END_DOCUMENT){
+            while (eventType != XmlPullParser.END_DOCUMENT) {
 
                 String tagname = parser.getName();
-                switch(eventType){
+                switch (eventType) {
 
                     case XmlPullParser.START_TAG:
 
-                        if(tagname.equalsIgnoreCase("item")){
-                            incident = new Incident();
+                        if (tagname.equalsIgnoreCase("item")) {
+                            if (dataTypeID == 0) {
+                                incident = new Item();
+                            } else if (dataTypeID == 1) {
+                                roadwork = new Item();
+                            } else if (dataTypeID == 2) {
+                                planned_roadwork = new Item();
+                            }
                         }
                         break;
 
@@ -64,16 +75,46 @@ public class XMLPullParserManager {
 
                     case XmlPullParser.END_TAG:
 
-                        if(tagname.equalsIgnoreCase("item")){
-                            incidents.add(incident);
-                        }else if(tagname.equalsIgnoreCase("title")){
-                            incident.set_incidentName(text);
-                        }else if(tagname.equalsIgnoreCase("description")){
-                            incident.set_incidentDescription(text);
-                        }else if(tagname.equalsIgnoreCase("georss:point")){
-                            incident.set_incidentLocation(text);
-                        }else if(tagname.equalsIgnoreCase("pubDate")){
-                            incident.set_incidentDate(text);
+                        if (tagname.equalsIgnoreCase("item")) {
+                            if (dataTypeID == 0) {
+                                incidents.add(incident);
+                            } else if (dataTypeID == 1) {
+                                roadworks.add(roadwork);
+                            } else if (dataTypeID == 2) {
+                                planned_roadworks.add(planned_roadwork);
+                            }
+                        } else if (tagname.equalsIgnoreCase("title")) {
+                            if (dataTypeID == 0) {
+                                incident.set_itemName(text);
+                            } else if (dataTypeID == 1) {
+                                roadwork.set_itemName(text);
+                            } else if (dataTypeID == 2) {
+                                planned_roadwork.set_itemName(text);
+                            }
+                        } else if (tagname.equalsIgnoreCase("description")) {
+                            if (dataTypeID == 0) {
+                                incident.set_itemDescription(text);
+                            } else if (dataTypeID == 1) {
+                                roadwork.set_itemDescription(text);
+                            } else if (dataTypeID == 2) {
+                                planned_roadwork.set_itemDescription(text);
+                            }
+                        } else if (tagname.equalsIgnoreCase("georss:point")) {
+                            if (dataTypeID == 0) {
+                                incident.set_itemLocation(text);
+                            } else if (dataTypeID == 1) {
+                                roadwork.set_itemLocation(text);
+                            } else if (dataTypeID == 2) {
+                                planned_roadwork.set_itemLocation(text);
+                            }
+                        } else if (tagname.equalsIgnoreCase("pubDate")) {
+                            if (dataTypeID == 0) {
+                                incident.set_itemDate(text);
+                            } else if (dataTypeID == 1) {
+                                roadwork.set_itemDate(text);
+                            } else if (dataTypeID == 2) {
+                                planned_roadwork.set_itemDate(text);
+                            }
                         }
                         break;
                     default:
@@ -81,65 +122,21 @@ public class XMLPullParserManager {
                 }
                 eventType = parser.next();
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
-        return incidents;
-    }
 
-    public List<Roadwork> parseRoadworks(InputStream stream){
+        // Returns incidents if dataTypeID is 0, roadworks if it is 1, planned roadworks if it is 2. (dataTypeID is set at parsing call, specific to dataset being parsed)
+        List<Item> tempList = new ArrayList<Item>();
 
-        XmlPullParserFactory factory = null;
-        XmlPullParser parser = null;
-
-        try{
-            factory = XmlPullParserFactory.newInstance();
-            factory.setNamespaceAware(true);
-
-            parser = factory.newPullParser();
-            parser.setInput(stream, null);
-
-            int eventType = parser.getEventType();
-            while(eventType != XmlPullParser.END_DOCUMENT){
-
-                String tagname = parser.getName();
-                switch(eventType){
-
-                    case XmlPullParser.START_TAG:
-
-                        if(tagname.equalsIgnoreCase("item")){
-                            roadwork = new Roadwork();
-                        }
-                        break;
-
-                    case XmlPullParser.TEXT:
-
-                        text = parser.getText();
-                        break;
-
-                    case XmlPullParser.END_TAG:
-
-                        if(tagname.equalsIgnoreCase("item")){
-                            roadworks.add(roadwork);
-                        }else if(tagname.equalsIgnoreCase("title")){
-                            roadwork.set_roadworkName(text);
-                        }else if(tagname.equalsIgnoreCase("description")){
-                            roadwork.set_roadworkDescription(text);
-                        }else if(tagname.equalsIgnoreCase("georss:point")){
-                            roadwork.set_roadworkLocation(text);
-                        }else if(tagname.equalsIgnoreCase("pubDate")){
-                            roadwork.set_roadworkDate(text);
-                        }
-                        break;
-                    default:
-                        break;
-                }
-                eventType = parser.next();
-            }
-        }catch (Exception e){
-            e.printStackTrace();
+        if(dataTypeID == 0){
+            tempList = incidents;
+        } else if (dataTypeID == 1){
+            tempList = roadworks;
+        } else if (dataTypeID == 2){
+            tempList = planned_roadworks;
         }
-        return roadworks;
-    }
 
+        return tempList;
+    }
 }
