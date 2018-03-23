@@ -10,9 +10,14 @@ package mpdproject.gcu.me.org.assignmenttest1;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.Xml;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+import org.xmlpull.v1.XmlPullParserFactory;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -21,6 +26,7 @@ import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.LinkedList;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener
 {
@@ -31,9 +37,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Button startButton;
     private String result = "";
 
+    LinkedList<Item> itemList = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
+        //LinkedList<Item> itemList = null;
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         urlInput = (TextView)findViewById(R.id.urlInput);
@@ -49,13 +59,73 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         startProgress();
     }
 
+    private LinkedList<Item> parseData(String data){
+        Item item = null;
+        LinkedList<Item> itemList = null;
+        boolean found = false;
+        try{
+            XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
+            factory.setNamespaceAware(true);
+            XmlPullParser pullParser = factory.newPullParser();
+            pullParser.setInput(new StringReader(data));
+            int eventType = pullParser.getEventType();
+            while(eventType != XmlPullParser.END_DOCUMENT){
+
+                if(eventType == XmlPullParser.START_TAG){
+                    if(pullParser.getName().equalsIgnoreCase("channel")){
+                        itemList = new LinkedList<Item>();
+                    }
+                    else if(pullParser.getName().equalsIgnoreCase("item")){
+                        Log.e("XMLParser", "Found item");
+                        item = new Item();
+                        found = true;
+                    }
+                    else if(pullParser.getName().equalsIgnoreCase("title") && found){
+                        String temp = pullParser.nextText();
+                        Log.e("XMLParser", temp);
+                        item.set_itemName(temp);
+                    }
+                    else if(pullParser.getName().equalsIgnoreCase("description") && found){
+                        String temp = pullParser.nextText();
+                        Log.e("XMLParser", temp);
+                        item.set_itemDescription(temp);
+                    }
+                    else if(pullParser.getName().equalsIgnoreCase("pubDate") && found){
+                        String temp = pullParser.nextText();
+                        Log.e("XMLParser", temp);
+                        item.set_itemDate(temp);
+                    }
+                }
+                else if(eventType == XmlPullParser.END_TAG){
+                    if(pullParser.getName().equalsIgnoreCase("item")){
+                        Log.e("XMLParser", "Item is" + item.toString());
+                        itemList.add(item);
+                    }
+                    else if(pullParser.getName().equalsIgnoreCase("channel")){
+                        int size;
+                        size = itemList.size();
+                        Log.e("XMLParser", "Amount of incidents: " + size);
+                    }
+                }
+                eventType = pullParser.next();
+            }
+        }
+        catch(XmlPullParserException ael){
+            Log.e("XMLParser", "Parsing error" + ael.toString());
+        }
+        catch(IOException ael){
+            Log.e("XMLParser", "IO Error during parsing");
+        }
+
+        Log.e("XMLParser", "End of Document");
+
+        return itemList;
+    }
+
     public void startProgress()
     {
         // Run network access on a separate thread;
         new Thread(new Task(_incidents)).start();
-        new Thread(new Task(_roadworks)).start();
-        new Thread(new Task(_planned_roadworks)).start();
-
     } //
 
 
@@ -87,11 +157,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 aurl = new URL(url);
                 yc = aurl.openConnection();
                 in = new BufferedReader(new InputStreamReader(yc.getInputStream()));
-                //
-                // Throw away the first 2 header lines before parsing
-                //
-                //
-                //
+
                 while ((inputLine = in.readLine()) != null)
                 {
                     result = result + inputLine;
@@ -105,13 +171,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Log.e("MyTag", "ioexception");
             }
 
-            //
-            // Now that you have the xml data you can parse it
-            //
-
-            // Now update the TextView to display raw XML data
-            // Probably not the best way to update TextView
-            // but we are just getting started !
+            itemList = parseData(result);
 
             MainActivity.this.runOnUiThread(new Runnable()
             {

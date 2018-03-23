@@ -4,45 +4,48 @@ public class Item {
 
     private String _itemName;
     private String _itemDescription;
-    private String _itemLocation;
     private String _itemDate;
+
+    public Item(){
+        _itemName = "";
+        _itemDescription = "";
+        _itemDate = "";
+    }
+
+    public Item(String title, String description, String date){
+        _itemName = title;
+        _itemDescription = description;
+        _itemDate = date;
+    }
 
     public String get_itemName() {
         return _itemName;
     }
 
-    public void set_itemName(String _itemName) {
-        this._itemName = _itemName;
+    public void set_itemName(String itemName) {
+        this._itemName = itemName;
     }
 
     public String get_itemDescription() {
         return _itemDescription;
     }
 
-    public void set_itemDescription(String _itemDescription) {
-        this._itemDescription = _itemDescription;
-    }
-
-    public String get_itemLocation() {
-        return _itemLocation;
-    }
-
-    public void set_itemLocation(String _itemLocation) {
-        this._itemLocation = _itemLocation;
+    public void set_itemDescription(String itemDescription) {
+        this._itemDescription = itemDescription;
     }
 
     public String get_itemDate() {
         return _itemDate;
     }
 
-    public void set_itemDate(String _itemDate) {
-        this._itemDate = _itemDate;
+    public void set_itemDate(String itemDate) {
+        this._itemDate = itemDate;
     }
 
     @Override
     public String toString(){
 
-        return _itemName + "\n" + _itemDescription + "\n" + _itemLocation + "\n" + _itemDate;
+        return _itemName + "\n" + _itemDescription + "\n" + _itemDate;
 
     }
 
