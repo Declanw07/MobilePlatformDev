@@ -1,24 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent">
-            <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:orientation="vertical"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent">
-                <Button
-                    android:id="@+id/startButton"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Press to get data"
-                />
+    android:layout_height="fill_parent"
+    android:id="@+id/mainView">
 
-                <TextView
-                    android:id="@+id/urlInput"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:textSize="20sp"
-                    android:text="Welcome to Mobile Platform Development"
-                />
-    </LinearLayout>
-</ScrollView>
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="vertical">
+
+        <Button
+            android:id="@+id/fetchIncidentButton"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:text="Press to show next Incident" />
+
+        <Button
+            android:id="@+id/fetchPlannedRoadworks"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/fetchIncidentButton"
+            android:text="Press to show planned roadworks" />
+
+        <Button
+            android:id="@+id/fetchRoadworks"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/fetchPlannedRoadworks"
+            android:text="Press to show current roadworks" />
+
+        <TextView
+            android:id="@+id/urlInput"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/fetchData"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="141dp"
+            android:gravity="center"
+            android:text="Data will be shown here"
+            android:textSize="20sp" />
+
+        <Button
+            android:id="@+id/fetchData"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentStart="true"
+            android:text="Press to refresh data" />
+
+    </RelativeLayout>
+</LinearLayout>

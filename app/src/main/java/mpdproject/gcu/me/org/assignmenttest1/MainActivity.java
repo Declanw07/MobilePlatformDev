@@ -7,12 +7,18 @@
 
 package mpdproject.gcu.me.org.assignmenttest1;
 
+import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.util.Xml;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import org.xmlpull.v1.XmlPullParser;
@@ -24,9 +30,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringReader;
+import java.lang.reflect.Array;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.LinkedList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener
 {
@@ -34,35 +42,92 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private String _roadworks="https://trafficscotland.org/rss/feeds/roadworks.aspx";
     private String _planned_roadworks="https://trafficscotland.org/rss/feeds/plannedroadworks.aspx";
     private TextView urlInput;
-    private Button startButton;
+    private Button fetchDataButton, incidentButton, roadworkButton, plannedRoadworkButton;
+
     private String result = "";
+    private View mainView;
+
+
+
+    private int currentIncidentIndex = 0;
+    private int currentRoadworksIndex = 0;
+    private int currentPlannedRoadworksIndex = 0;
 
     LinkedList<Item> itemList = null;
+    LinkedList<Item> incidentList = null;
+    LinkedList<Item> roadworkList = null;
+    LinkedList<Item> plannedRoadworkList = null;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
-        //LinkedList<Item> itemList = null;
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        urlInput = (TextView)findViewById(R.id.urlInput);
-        startButton = (Button)findViewById(R.id.startButton);
-        startButton.setOnClickListener(this);
 
+
+
+        mainView = findViewById(R.id.mainView);
+        urlInput = (TextView)findViewById(R.id.urlInput);
+        fetchDataButton = (Button)findViewById(R.id.fetchData);
+        fetchDataButton.setOnClickListener(this);
+        incidentButton = (Button)findViewById(R.id.fetchIncidentButton);
+        incidentButton.setOnClickListener(this);
+        roadworkButton = (Button)findViewById(R.id.fetchRoadworks);
+        roadworkButton.setOnClickListener(this);
+        plannedRoadworkButton = (Button)findViewById(R.id.fetchPlannedRoadworks);
+        plannedRoadworkButton.setOnClickListener(this);
+
+        //startButton.setOnClickListener(this);
+        mainView.setBackgroundColor(getResources().getColor(R.color.silver, null));
 
 
     } // End of onCreate
 
-    public void onClick(View aview)
+
+
+    public void onClick(View v)
     {
-        startProgress();
+
+        switch(v.getId()){
+
+            case R.id.fetchData:
+                loadData dataLoader = new loadData();
+                dataLoader.execute();
+                Log.e("ASYNC: ", "lul");
+
+            case R.id.fetchIncidentButton:
+                if(incidentList != null && currentIncidentIndex != incidentList.size()) {
+                    urlInput.setText(incidentList.get(currentIncidentIndex).toString());
+                    currentIncidentIndex++;
+                }
+                break;
+
+            case R.id.fetchRoadworks:
+                if(roadworkList != null && currentRoadworksIndex != roadworkList.size()) {
+                    urlInput.setText(roadworkList.get(currentRoadworksIndex).toString());
+                    currentRoadworksIndex++;
+                }
+                break;
+
+            case R.id.fetchPlannedRoadworks:
+                if(plannedRoadworkList != null && currentPlannedRoadworksIndex != plannedRoadworkList.size()) {
+                    urlInput.setText(plannedRoadworkList.get(currentPlannedRoadworksIndex).toString());
+                    currentPlannedRoadworksIndex++;
+                }
+                break;
+
+        }
     }
 
     private LinkedList<Item> parseData(String data){
         Item item = null;
         LinkedList<Item> itemList = null;
         boolean found = false;
+
+        Log.e("XMLParser:", "Starting Parsing");
+
         try{
             XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
             factory.setNamespaceAware(true);
@@ -122,11 +187,50 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         return itemList;
     }
 
-    public void startProgress()
+    // datatype determines what dataset we are going to parse, 0 is incidents,
+    // 1 is roadworks, 2 is planned roadworks.
+    public void startProgress(int dataType)
     {
         // Run network access on a separate thread;
-        new Thread(new Task(_incidents)).start();
-    } //
+        switch(dataType) {
+
+            case 0:
+                new Thread(new Task(_incidents, 0)).start();
+                break;
+
+            case 1:
+                new Thread(new Task(_roadworks, 1)).start();
+                break;
+
+            case 2:
+                new Thread(new Task(_planned_roadworks, 2)).start();
+                break;
+
+        }
+
+    }
+
+    private class loadData extends AsyncTask<Void, Void, Void>{
+
+        public loadData(){
+            super();
+        }
+
+        protected Void doInBackground(Void... params){
+            Log.e("ASYNC: ","doinbackground");
+            //new Task(_incidents, 0).run();
+            new Task(_roadworks, 1).run();
+            //new Task(_planned_roadworks, 2).run();
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result){
+
+        }
+
+    }
 
 
     // Need separate thread to access the internet resource over network
@@ -134,10 +238,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     class Task implements Runnable
     {
     private String url;
+    private Integer dataType;
 
-        public Task(String aurl)
+        public Task(String aurl, Integer dataSet)
         {
             url = aurl;
+            dataType = dataSet;
         }
         @Override
         public void run()
@@ -173,11 +279,33 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             itemList = parseData(result);
 
+            switch(dataType){
+
+                case 0:
+                    incidentList = (LinkedList<Item>)itemList.clone();
+                    Log.e("Incident List: ", "Cloning List");
+                    break;
+
+                case 1:
+                    roadworkList = (LinkedList<Item>)itemList.clone();
+                    Log.e("Roadworks List: ", "Cloning List");
+                    break;
+
+                case 2:
+                    plannedRoadworkList = (LinkedList<Item>)itemList.clone();
+                    Log.e("Planned Roadworks List", " Cloning List");
+                    break;
+                }
+
+
             MainActivity.this.runOnUiThread(new Runnable()
             {
                 public void run() {
                     Log.d("UI thread", "I am the UI thread");
-                    urlInput.setText(result);
+                    //urlInput.setText(itemList.get(currentIndex).toString());
+                    //if(currentIndex - 1 < itemList.size()) {
+                    //    currentIndex++;
+                    //}
                 }
             });
         }
