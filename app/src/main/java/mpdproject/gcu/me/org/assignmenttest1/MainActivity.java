@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private TextView urlInput;
     private Button fetchDataButton, incidentButton, roadworkButton, plannedRoadworkButton;
 
-    private String result = "";
+    //private String result = "";
     private View mainView;
 
 
@@ -163,7 +163,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
                 else if(eventType == XmlPullParser.END_TAG){
                     if(pullParser.getName().equalsIgnoreCase("item")){
-                        Log.e("XMLParser", "Item is" + item.toString());
+                        //Log.e("XMLParser", "Item is" + item.toString());
                         itemList.add(item);
                     }
                     else if(pullParser.getName().equalsIgnoreCase("channel")){
@@ -218,9 +218,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         protected Void doInBackground(Void... params){
             Log.e("ASYNC: ","doinbackground");
-            //new Task(_incidents, 0).run();
+
+            new Task(_incidents, 0).run();
             new Task(_roadworks, 1).run();
-            //new Task(_planned_roadworks, 2).run();
+            new Task(_planned_roadworks, 2).run();
 
             return null;
         }
@@ -238,6 +239,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     class Task implements Runnable
     {
     private String url;
+    private String result = "";
     private Integer dataType;
 
         public Task(String aurl, Integer dataSet)
@@ -298,16 +300,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
 
 
-            MainActivity.this.runOnUiThread(new Runnable()
-            {
-                public void run() {
-                    Log.d("UI thread", "I am the UI thread");
-                    //urlInput.setText(itemList.get(currentIndex).toString());
-                    //if(currentIndex - 1 < itemList.size()) {
-                    //    currentIndex++;
-                    //}
-                }
-            });
+            //MainActivity.this.runOnUiThread(new Runnable()
+            //{
+            //    public void run() {
+            //        Log.d("UI thread", "I am the UI thread");
+
+            //    }
+            //});
         }
 
     }

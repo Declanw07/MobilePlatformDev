@@ -14,15 +14,16 @@
             android:id="@+id/fetchIncidentButton"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
+            android:layout_alignParentEnd="true"
             android:layout_alignParentTop="true"
+            android:layout_marginEnd="388dp"
             android:text="Press to show next Incident" />
 
         <Button
             android:id="@+id/fetchPlannedRoadworks"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
+            android:layout_alignEnd="@+id/fetchIncidentButton"
             android:layout_below="@+id/fetchIncidentButton"
             android:text="Press to show planned roadworks" />
 
@@ -30,25 +31,40 @@
             android:id="@+id/fetchRoadworks"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_alignEnd="@+id/fetchPlannedRoadworks"
             android:layout_alignParentStart="true"
             android:layout_below="@+id/fetchPlannedRoadworks"
             android:text="Press to show current roadworks" />
 
-        <TextView
-            android:id="@+id/urlInput"
+        <ScrollView
+            android:id="@+id/scrollView"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_above="@+id/fetchData"
-            android:layout_centerHorizontal="true"
-            android:layout_marginBottom="141dp"
-            android:gravity="center"
-            android:text="Data will be shown here"
-            android:textSize="20sp" />
+
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentTop="true"
+            android:layout_toEndOf="@+id/fetchPlannedRoadworks"
+            android:scrollbars="vertical">
+
+            <TextView
+                android:id="@+id/urlInput"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentTop="true"
+                android:layout_toEndOf="@+id/fetchPlannedRoadworks"
+                android:gravity="center"
+                android:text="Data will be shown here"
+                android:textSize="20sp" />
+
+        </ScrollView>
 
         <Button
             android:id="@+id/fetchData"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
+            android:layout_alignEnd="@+id/fetchRoadworks"
             android:layout_alignParentBottom="true"
             android:text="Press to refresh data" />
 
