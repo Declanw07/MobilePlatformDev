@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--    Student Name: Declan Wylie - Matriculation Number: S1429200    -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:id="@+id/mainView">
+
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="vertical">
+
+        <Button
+            android:id="@+id/fetchIncidentButton"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginEnd="388dp"
+            android:text="show incidents" />
+
+        <Button
+            android:id="@+id/fetchPlannedRoadworks"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignEnd="@+id/fetchIncidentButton"
+            android:layout_below="@+id/fetchIncidentButton"
+            android:text="show planned roadworks" />
+
+        <Button
+            android:id="@+id/fetchRoadworks"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignEnd="@+id/fetchPlannedRoadworks"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/fetchPlannedRoadworks"
+            android:text="show roadworks" />
+
+        <EditText
+            android:id="@+id/editText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/fetchRoadworks"
+            android:layout_toStartOf="@+id/scrollView"
+            android:text="Search here..."
+            android:textColor="@color/LightGrey"
+            android:gravity="center"/>
+
+        <Button
+            android:id="@+id/searchButton"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/editText"
+            android:layout_toStartOf="@+id/scrollView"
+            android:text="search"/>
+
+        <ScrollView
+            android:id="@+id/scrollView"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentTop="true"
+            android:layout_toEndOf="@+id/fetchPlannedRoadworks"
+            android:scrollbars="vertical">
+
+            <TextView
+                android:id="@+id/urlInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentTop="true"
+                android:layout_toEndOf="@+id/fetchPlannedRoadworks"
+                android:gravity="center"
+                android:text=""
+                android:textSize="20sp" />
+
+
+        </ScrollView>
+
+        <Button
+            android:id="@+id/fetchData"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignEnd="@+id/fetchRoadworks"
+            android:layout_alignParentBottom="true"
+            android:text="Press to refresh data" />
+
+    </RelativeLayout>
+</LinearLayout>
