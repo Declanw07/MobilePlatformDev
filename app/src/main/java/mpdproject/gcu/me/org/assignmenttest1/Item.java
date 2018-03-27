@@ -1,3 +1,8 @@
+//
+// Declan Wylie Mobile Platform Development Coursework
+// Matric: S1429200     University Username: DWYLIE202
+//
+
 package mpdproject.gcu.me.org.assignmenttest1;
 
 public class Item {
