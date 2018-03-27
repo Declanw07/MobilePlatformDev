@@ -83,7 +83,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // Create timer and fetch/parse XML datasets every 2 minutes to have accurate data.
         Timer timer = new Timer();
         long delay = 0;
-        long interval = 1 * 120000;
+        long interval = 1 * 12000000;
 
         TimerTask task = new TimerTask() {
             @Override
